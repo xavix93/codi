@@ -3,6 +3,8 @@ const API_URL = "https://codi-nex3.onrender.com/api";
 let currentUser = null;
 let currentDate = new Date().toISOString().slice(0, 10);
 
+const STORAGE_USER_KEY = "calendar-current-user";
+
 const usernameInput = document.getElementById("username");
 const btnLogin = document.getElementById("btnLogin");
 const currentUserLabel = document.getElementById("currentUser");
@@ -26,6 +28,44 @@ const eventsList = document.getElementById("eventsList");
 
 dateInput.value = currentDate;
 
+/**
+ * Aplica el estado de "usuario logueado":
+ * - Actualiza etiqueta de usuario
+ * - Muestra secciones
+ * - Carga eventos del día
+ */
+function applyLoggedInState(user) {
+  currentUser = user;
+  currentUserLabel.textContent = `Usuario actual: ${user.name} (id: ${user.id})`;
+
+  dateSection.classList.remove("hidden");
+  createEventSection.classList.remove("hidden");
+  eventsSection.classList.remove("hidden");
+
+  // Cargar eventos del día automáticamente
+  currentDate = dateInput.value || new Date().toISOString().slice(0, 10);
+  btnLoadEvents.click();
+}
+
+/**
+ * Intenta restaurar el usuario guardado en localStorage
+ */
+function initUserFromStorage() {
+  const stored = localStorage.getItem(STORAGE_USER_KEY);
+  if (!stored) return;
+
+  try {
+    const user = JSON.parse(stored);
+    if (user && user.id && user.name) {
+      // Rellenar el input con el nombre guardado (por si acaso)
+      usernameInput.value = user.name;
+      applyLoggedInState(user);
+    }
+  } catch (e) {
+    console.error("Error leyendo usuario guardado:", e);
+  }
+}
+
 // 1) Login simple
 btnLogin.addEventListener("click", async () => {
   const name = usernameInput.value.trim();
@@ -41,15 +81,14 @@ btnLogin.addEventListener("click", async () => {
   });
 
   const user = await res.json();
-  currentUser = user;
-  currentUserLabel.textContent = `Usuario actual: ${user.name} (id: ${user.id})`;
 
-  dateSection.classList.remove("hidden");
-  createEventSection.classList.remove("hidden");
-  eventsSection.classList.remove("hidden");
+  // Guardar usuario en localStorage para futuras visitas
+  localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user));
+
+  applyLoggedInState(user);
 });
 
-// 2) Cargar eventos del día
+// 2) Cargar eventos del día (también se usa internamente)
 btnLoadEvents.addEventListener("click", async () => {
   if (!currentUser) {
     alert("Primero inicia sesión");
@@ -85,8 +124,8 @@ btnCreateEvent.addEventListener("click", async () => {
 
   const sharedWithNames = sharedRaw
     .split(",")
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 
   const body = {
     title,
@@ -106,6 +145,7 @@ btnCreateEvent.addEventListener("click", async () => {
 
   const data = await res.json();
   alert("Evento creado (id " + data.eventId + ")");
+
   // limpiar formulario
   eventTitle.value = "";
   eventDescription.value = "";
@@ -127,7 +167,7 @@ function renderEvents(events) {
     return;
   }
 
-  events.forEach(ev => {
+  events.forEach((ev) => {
     const card = document.createElement("div");
     card.className = "event-card";
 
@@ -139,11 +179,12 @@ function renderEvents(events) {
 
     const badge = document.createElement("span");
     badge.className = "badge";
-    badge.textContent = ev.recurrence === "NONE"
-      ? "Una vez"
-      : ev.recurrence === "HOURLY"
-      ? "Cada hora"
-      : "Cada día";
+    badge.textContent =
+      ev.recurrence === "NONE"
+        ? "Una vez"
+        : ev.recurrence === "HOURLY"
+        ? "Cada hora"
+        : "Cada día";
 
     header.appendChild(title);
     header.appendChild(badge);
@@ -158,14 +199,14 @@ function renderEvents(events) {
       <p><strong>Fin:</strong> ${end.toLocaleString()}</p>
       <p><strong>Compartido con:</strong> ${
         ev.sharedWith.length
-          ? ev.sharedWith.map(u => u.name).join(", ")
+          ? ev.sharedWith.map((u) => u.name).join(", ")
           : "(solo el dueño)"
       }</p>
     `;
 
     const completed = document.createElement("div");
     completed.className = "completed-users";
-    const completedNames = ev.completedBy.map(u => u.name);
+    const completedNames = ev.completedBy.map((u) => u.name);
     completed.textContent =
       completedNames.length > 0
         ? "Ya cumplido por: " + completedNames.join(", ")
@@ -194,3 +235,6 @@ function renderEvents(events) {
     eventsList.appendChild(card);
   });
 }
+
+// 🔄 Al cargar la página, intentar restaurar el usuario guardado
+initUserFromStorage();
