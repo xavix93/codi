@@ -2,48 +2,91 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Calendario Compartido</title>
+  <title>Calendario compartido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Calendario compartido</h1>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="app-title">Calendario compartido</div>
+      <div class="user-area">
+        <div id="login-section" class="login-box">
+          <input type="text" id="username" placeholder="Tu nombre" />
+          <button id="btnLogin">Entrar</button>
+        </div>
+        <div id="user-info" class="hidden user-info">
+          <span id="currentUser"></span>
+          <button id="btnLogout" class="secondary-btn">Salir</button>
+        </div>
+      </div>
+    </header>
 
-  <section id="login-section">
-    <h2>1. Iniciar sesión (solo nombre)</h2>
-    <input type="text" id="username" placeholder="Tu nombre" />
-    <button id="btnLogin">Entrar</button>
-    <p id="currentUser"></p>
-  </section>
+    <main class="app-main">
+      <!-- Calendario grande -->
+      <section class="calendar-section">
+        <div class="calendar-header">
+          <button id="prevMonth" class="nav-btn">◀</button>
+          <div class="month-label" id="monthLabel"></div>
+          <button id="nextMonth" class="nav-btn">▶</button>
+        </div>
 
-  <section id="date-section" class="hidden">
-    <h2>2. Fecha a revisar</h2>
-    <input type="date" id="currentDate" />
-    <button id="btnLoadEvents">Cargar eventos</button>
-  </section>
+        <div class="calendar-weekdays">
+          <div>Lu</div>
+          <div>Ma</div>
+          <div>Mi</div>
+          <div>Ju</div>
+          <div>Vi</div>
+          <div>Sa</div>
+          <div>Do</div>
+        </div>
 
-  <section id="create-event-section" class="hidden">
-    <h2>3. Crear evento</h2>
-    <input type="text" id="eventTitle" placeholder="Título del evento" /><br />
-    <textarea id="eventDescription" placeholder="Descripción"></textarea><br />
-    <label>Inicio:</label>
-    <input type="datetime-local" id="eventStart" /><br />
-    <label>Fin:</label>
-    <input type="datetime-local" id="eventEnd" /><br />
-    <label>Repetición:</label>
-    <select id="eventRecurrence">
-      <option value="NONE">Sin repetición</option>
-      <option value="HOURLY">Cada hora</option>
-      <option value="DAILY">Cada día</option>
-    </select><br />
-    <label>Compartir con (nombres separados por coma):</label><br />
-    <input type="text" id="eventSharedWith" placeholder="ej: Ana,Pedro,Camila" /><br />
-    <button id="btnCreateEvent">Crear evento</button>
-  </section>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </section>
 
-  <section id="events-section" class="hidden">
-    <h2>4. Eventos del día</h2>
-    <div id="eventsList"></div>
-  </section>
+      <!-- Panel lateral: eventos del día + crear evento -->
+      <section class="side-panel">
+        <div class="selected-date-panel">
+          <h2 id="selectedDateLabel">Eventos del día</h2>
+
+          <!-- Input de fecha "sin protagonismo", sincronizado con el calendario -->
+          <input type="date" id="currentDate" class="hidden-date-input" />
+          <button id="btnLoadEvents" class="hidden-btn">Cargar eventos</button>
+
+          <div id="events-section">
+            <div id="eventsList" class="events-list"></div>
+          </div>
+        </div>
+
+        <div id="create-event-section" class="create-event-section hidden">
+          <h2>Crear evento</h2>
+          <label for="eventTitle">Título</label>
+          <input type="text" id="eventTitle" placeholder="Título del evento" />
+
+          <label for="eventDescription">Descripción</label>
+          <textarea id="eventDescription" placeholder="Descripción (opcional)"></textarea>
+
+          <label for="eventStart">Inicio</label>
+          <input type="datetime-local" id="eventStart" />
+
+          <label for="eventEnd">Fin</label>
+          <input type="datetime-local" id="eventEnd" />
+
+          <label for="eventRecurrence">Repetición</label>
+          <select id="eventRecurrence">
+            <option value="NONE">Sin repetición</option>
+            <option value="HOURLY">Cada hora</option>
+            <option value="DAILY">Cada día</option>
+          </select>
+
+          <label for="eventSharedWith">Compartir con (nombres separados por coma)</label>
+          <input type="text" id="eventSharedWith" placeholder="ej: Ana, Pedro, Camila" />
+
+          <button id="btnCreateEvent">Crear evento</button>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="app.js"></script>
 </body>
