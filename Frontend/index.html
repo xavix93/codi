@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calendario Compartido</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Calendario compartido</h1>
+
+  <section id="login-section">
+    <h2>1. Iniciar sesión (solo nombre)</h2>
+    <input type="text" id="username" placeholder="Tu nombre" />
+    <button id="btnLogin">Entrar</button>
+    <p id="currentUser"></p>
+  </section>
+
+  <section id="date-section" class="hidden">
+    <h2>2. Fecha a revisar</h2>
+    <input type="date" id="currentDate" />
+    <button id="btnLoadEvents">Cargar eventos</button>
+  </section>
+
+  <section id="create-event-section" class="hidden">
+    <h2>3. Crear evento</h2>
+    <input type="text" id="eventTitle" placeholder="Título del evento" /><br />
+    <textarea id="eventDescription" placeholder="Descripción"></textarea><br />
+    <label>Inicio:</label>
+    <input type="datetime-local" id="eventStart" /><br />
+    <label>Fin:</label>
+    <input type="datetime-local" id="eventEnd" /><br />
+    <label>Repetición:</label>
+    <select id="eventRecurrence">
+      <option value="NONE">Sin repetición</option>
+      <option value="HOURLY">Cada hora</option>
+      <option value="DAILY">Cada día</option>
+    </select><br />
+    <label>Compartir con (nombres separados por coma):</label><br />
+    <input type="text" id="eventSharedWith" placeholder="ej: Ana,Pedro,Camila" /><br />
+    <button id="btnCreateEvent">Crear evento</button>
+  </section>
+
+  <section id="events-section" class="hidden">
+    <h2>4. Eventos del día</h2>
+    <div id="eventsList"></div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
