@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://codi-nex3.onrender.com//api";
 
 let currentUser = null;
 let currentDate = new Date().toISOString().slice(0, 10);
